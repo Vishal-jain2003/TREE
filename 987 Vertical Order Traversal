@@ -1,0 +1,91 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> verticalTraversal(TreeNode root) {
+        // to find vertical order
+        // first (i,j) it means i represents level of tree
+        // and j represents horizontal distance if go left reduce by 1 and in right +1
+        Queue<Triple>q = new LinkedList<>();
+        
+        Map<Integer,List<Pair>>hm = new TreeMap<>();
+        // in pair node val and level of node ;
+        q.add(new Triple(root,0,0));
+      // now in queue we have root level and horizontal dist and in map hori dist and in list pair there is level as well as node val also
+        while(!q.isEmpty())
+        {
+            Triple curr=q.remove();
+            TreeNode node = curr.node;
+            int hd = curr.hd;
+            int level = curr.level;
+            if (hm.containsKey(curr.hd))
+            {
+                hm.get(hd).add(new Pair(node.val,level));
+            }
+            else
+            {
+                ArrayList<Pair>temp=new ArrayList<>();
+                temp.add(new Pair(node.val,level));
+                hm.put(hd,temp);
+            }
+            if (node.left!=null)
+            {
+                q.add(new Triple(node.left,hd-1,level+1));
+            }
+            if (node.right!=null)
+            {
+                q.add(new Triple(node.right,hd+1,level+1));
+            }
+
+        }
+        List<List<Integer>>ans = new ArrayList<>();
+       for (List<Pair>al:hm.values())
+       {
+        al.sort((a,b)->a.level==b.level?Integer.compare(a.val,b.val):Integer.compare(a.level,b.level));
+        List<Integer>cols = new ArrayList<>();
+        for (Pair pp:al)
+        {
+            cols.add(pp.val);
+        }
+        ans.add(cols);
+       }
+        return ans;
+
+        
+    }
+    // in the pair we are storing node val and level of node
+
+    static class Pair{
+        int val;
+        int level;
+        public Pair(int val,int level)
+        {
+            this.val = val;
+            this.level = level;
+        }
+    }
+
+    static class Triple{
+        TreeNode node;
+        int hd;
+        int level;
+        public Triple(TreeNode node,int hd,int level)
+        {
+            this.node=node;
+            this.hd = hd;
+            this.level = level;
+        }
+    }
+}
